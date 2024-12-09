@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+        .postCard {
+            box-shadow: 0px 0px 10px black;
+            border-radius: 1px;
+            border: 1px solid black;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>My Crud Post App</h1>
+
+    <form onsubmit="createPost(); return false">
+        <label for="title">Post title</label>
+        <input type="text" name="title" id="title" />
+        <br />
+        <br />
+
+        <label for="postText">Post Text</label>
+        <input type="text" name="postText" id="postText" />
+
+        <br />
+        <br />
+
+        <button type="submit">Submit</button>
+        
+
+    </form>
+
+    <div id="result"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script type="module">
+        window.createPost = () => {
+            let title = document.getElementById("title").value;
+            let postText = document.getElementById("postText").value;
+            axios
+                .post(`/api/v1/post`, {
+                    title: title,
+                    text: postText,
+                })
+                .then((response) => {
+                    let data = response.data;
+                    // console.log(data)
+                    
+                    getPost();
+                })
+                
+                .catch((error) => {
+                    console.log(error);
+                    let result = document.getElementById("result");
+                    result.innerHTML = `Error in Post Creation`;
+                });
+                
+        };
+
+        const getPost = async () => {
+            try {
+                let title = document.getElementById("title");
+            let postText = document.getElementById("postText");
+            title.value = "";
+            postText.value ="";
+                const responseData = await axios.get("/api/v1/posts");
+                let data = responseData.data;
+                console.log(data, "data");
+                let postsHTML = "";
+
+                data.forEach((item) => {
+
+                    postsHTML += `
+                    <div id="card-${item.id}" class=postCard>
+                    <h2>${item.title}</h2>
+                    <p>${item.text}</p>
+                    <button onclick="delHandler('${item.id}')">Delete</button>
+                        <button onclick="editHandler('${item.title}', '${item.text}', '${item.id}')">Edit</button>
+                    
+                        </div>`
+                });
+
+                result.innerHTML = postsHTML;
+            } catch (error) {
+                //console.log(error);
+                let result = document.getElementById("result");
+                result.innerHTML = `Error in Post Creation`;
+            }
+        };
+
+        setTimeout(()=>{
+            getPost();
+        },100)
+
+        window.delHandler = async(postId) => {
+            try {
+                const responseData = await axios.delete(`/api/v1/posts/${postId}`);
+                let data = responseData.data;
+                getPost()
+                
+                console.log(data, "deleteData");
+                let postsHTML = "";
+
+                data.forEach((item) => {
+
+                    postsHTML += `
+                    <div class=postCard>
+                    <h2>${item.title}</h2>
+                    <p>${item.text}</p>
+                    <button onclick="delHandler('${item.id}')">Delete</button>
+                        <button onclick="editHandler()">Edit</button>
+                    
+                        </div>`
+                });
+
+                result.innerHTML = postsHTML;
+            } catch (error) {
+                //console.log(error);
+                let result = document.getElementById("result");
+                result.innerHTML = `Error in Post deletion`;
+            }
+
+        }
+    
+
+
+        window.editHandler = async(title, text, postId) => {
+
+            document.querySelector(`#card-${postId}`).innerHTML =`
+            <form onsubmit="updatePost('${postId}'); return false">
+            <label for="title">Post title</label>
+            <input type="text" name="title" id='title-${postId}' value="${title}"/>
+            <br />
+            <br />
+    
+            <label for="postText">Post Text</label>
+            <input type="text" name="postText" id="postText-${postId}" value="${text}"/>
+    
+            <br />
+            <br />
+    
+            <button type="submit">Update</button>
+            </form>
+            `
+  
+
+        }
+
+        window.updatePost = (postId)=>{
+            const updateTitle = document.getElementById(`title-${postId}`).value;
+            const updateText = document.getElementById(`postText-${postId}`).value;
+            axios
+                .put(`/api/v1/posts/${postId}`, {
+                    title: updateTitle,
+                    text: updateText,
+                })
+                .then((response) => {
+                    let data = response.data;
+                    // console.log(data)
+                    getPost();
+                })
+                
+                .catch((error) => {
+                    console.log(error);
+                    let result = document.getElementById("result");
+                    result.innerHTML = `Error in Update Creation`;
+                });
+
+        }
+
+    
+    
+    
+    </script>
+</body>
+
+</html>
