@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Welcome To Login Page</h1>
+
+    <form id="loginHandler">
+      <label for="title">Email</label>
+      <input type="email" name="Email" id="email" />
+      <br />
+      <br />
+
+      <label for="postText">Password</label>
+      <input type="password" name="password" id="password" />
+
+      <br />
+      <br />
+
+      <button type="submit">Login</button>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script type="module">
+      document
+        .querySelector("#loginHandler")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const email = document.querySelector("#email").value;
+          const password = document.querySelector("#password").value;
+
+          console.log("email",email)
+          console.log("password",password)
+
+          try {
+            const resp = await axios.post("/api/v1/auth/login",{
+              email,
+              password
+            })
+            console.log("response",resp.status)
+
+            if(resp.status === 200){
+                window.location.href = "/index.html"
+            }
+
+
+          } catch (error) {
+            console.log(error);
+          }
+        });
+    </script>
+  </body>
+</html>

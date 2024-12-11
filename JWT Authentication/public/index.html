@@ -41,6 +41,8 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
+
+
     <script type="module">
         window.createPost = () => {
             let title = document.getElementById("title").value;
@@ -71,7 +73,9 @@
             let postText = document.getElementById("postText");
             title.value = "";
             postText.value ="";
-                const responseData = await axios.get("/api/v1/posts");
+                const responseData = await axios.get("/api/v1/posts",{
+                    withCredentials: true
+                });
                 let data = responseData.data;
                 console.log(data, "data");
                 let postsHTML = "";
@@ -84,12 +88,17 @@
                     <p>${item.text}</p>
                     <button onclick="delHandler('${item.id}')">Delete</button>
                         <button onclick="editHandler('${item.title}', '${item.text}', '${item.id}')">Edit</button>
-                    
-                        </div>`
+                    <p>Created by:${item.author}</p>
+                        </div>
+                        `
                 });
 
                 result.innerHTML = postsHTML;
             } catch (error) {
+
+                if(error.response.status===401){
+                    window.location.href = "/login.html"
+                }
                 //console.log(error);
                 let result = document.getElementById("result");
                 result.innerHTML = `Error in Post Creation`;
@@ -154,6 +163,8 @@
 
         }
 
+
+        
         window.updatePost = (postId)=>{
             const updateTitle = document.getElementById(`title-${postId}`).value;
             const updateText = document.getElementById(`postText-${postId}`).value;

@@ -2,6 +2,7 @@ import express from "express";
 import { client } from "../mongodb.js"; 
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
+import "dotenv/config"
 
 
 
@@ -85,17 +86,28 @@ authRouter.post("/login",async(req,res)=>{
 
             if(isMatch){
 
+               // const dateAfter24HourMili = (new Date().getTime() + (24*60*60*1000));
+                //const dateAfter2MinMili = (new Date().getTime() + (2*60*1000));
+
                 //TODO:Create token for This user
 
                 const token = jwt.sign({
                     isAdmin:false,
                     email:req.body.email,
-                    createdOn:new Date().getTime(),
-                },process.env.SECRET)
+                    firstName:findEmail.firstName,
+                    lastName:findEmail.lastName,
+                    // createdOn:new Date().getTime(),
+                    // expires:dateAfter24HourMili,
+                },process.env.SECRET,{
+                    expiresIn:"24h"
+                })
+
+                console.log("token",token)
 
                 res.cookie("token",token,{
                     httpOnly:true,
-                    secure:true
+                    secure:true,
+                    // expires:new Date(dateAfter24HourMili) 
                 })
 
                 res.status(200).send({

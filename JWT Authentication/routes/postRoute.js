@@ -21,15 +21,17 @@ postRouter.post("/post", async (req, res) => {
     const newPost = {
         id: nanoid(),
         title,
-        text
+        text,
+        from:req.body.decoded.email,
+        author:req.body.decoded.firstName
     };
 
     try {
         const result = await col.insertOne(newPost);
-        console.log("Post created:", result);
+        // console.log("Post created:", result);
         res.status(201).send("Post created");
     } catch (err) {
-        console.error("Error creating post:", err);
+        // console.error("Error creating post:", err);
         res.status(500).send("Server Error");
     }
 });
@@ -39,7 +41,7 @@ postRouter.get("/posts", async (req, res) => {
     try {
         const getAllPosts = col.find({})
         const results = await getAllPosts.toArray()
-        console.log("results",results)
+        // console.log("results",results)
         res.status(200).send(results)
     } catch (error) {
         console.log("error",error)
@@ -52,11 +54,11 @@ postRouter.get("/posts", async (req, res) => {
 
 postRouter.get('/posts/:postId',async (req,res)=>{
     const {postId} = req.params
-    console.log("postId",postId)
+    // console.log("postId",postId)
     
     try {
         const SpecificPost =await col.findOne({_id:new ObjectId(postId)})
-        console.log("results",SpecificPost)
+        // console.log("results",SpecificPost)
         res.status(200).send(SpecificPost)
     } catch (error) {
         console.log("error",error)
@@ -87,7 +89,7 @@ postRouter.put("/posts/:postId", async (req, res) => {
 
         res.send(`Post updated with ID ${postId}`);
     } catch (err) {
-        console.error("Error updating post:", err);
+        // console.error("Error updating post:", err);
         res.status(500).send("Error updating post");
     }
 });
@@ -105,7 +107,7 @@ postRouter.delete("/posts/:postId", async (req, res) => {
 
         res.send(`Post deleted with ID ${postId}`);
     } catch (err) {
-        console.error("Error deleting post:", err);
+        // console.error("Error deleting post:", err);
         res.status(500).send("Error deleting post");
     }
 });
