@@ -63,7 +63,7 @@ postRouter.get('/posts/:postId',async (req,res)=>{
         res.status(500).send("Server Error")
         
     }
-})
+});
 
 
 // PUT route to update a post
